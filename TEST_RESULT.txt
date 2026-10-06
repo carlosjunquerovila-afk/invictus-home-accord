@@ -1,0 +1,17 @@
+test_double_commit_rejected_and_receipt_hash_valid (test_app.Invariants.test_double_commit_rejected_and_receipt_hash_valid) ... ok
+test_failed_disk_commit_rolls_back_memory_and_disk (test_app.Invariants.test_failed_disk_commit_rolls_back_memory_and_disk) ... ok
+test_impossible_request_leaves_no_mutation (test_app.Invariants.test_impossible_request_leaves_no_mutation) ... ok
+test_invalid_input_and_cap_below_committed_usage (test_app.Invariants.test_invalid_input_and_cap_below_committed_usage) ... ok
+test_limit_revision_invalidates_consent (test_app.Invariants.test_limit_revision_invalidates_consent) ... ok
+test_no_commit_without_all_consents (test_app.Invariants.test_no_commit_without_all_consents) ... ok
+test_no_undo_overwrites_later_changes (test_app.Invariants.test_no_undo_overwrites_later_changes) ... ok
+test_schedule_respects_power_and_single_resource (test_app.Invariants.test_schedule_respects_power_and_single_resource) ... ok
+test_stale_proposal_rejected_after_other_commit (test_app.Invariants.test_stale_proposal_rejected_after_other_commit) ... ok
+test_undo_restores_exact_agenda_and_persists (test_app.Invariants.test_undo_restores_exact_agenda_and_persists) ... ok
+test_withdrawal_blocks_commit (test_app.Invariants.test_withdrawal_blocks_commit) ... ok
+test_real_http_consent_commit_and_undo (test_http.HTTPWorkflow.test_real_http_consent_commit_and_undo) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.539s
+
+OK
