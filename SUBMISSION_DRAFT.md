@@ -4,7 +4,7 @@
 **Primary track proposed:** Alexa+ — simulated experience  
 **Participant public identity:** Carlosjv  
 **Build started:** 6 October 2026  
-**Status:** local prototype, no registration or prize confirmed
+**Status:** tested prototype with public source; no registration, submission, or prize confirmed
 
 ## Elevator pitch
 
@@ -32,10 +32,12 @@ ChatGPT supported research, implementation, and adversarial review. Python stand
 
 ## Still required before submission
 
-- Participant review and approval of the final work and contest terms.
-- Public GitHub URL with the MIT license and setup instructions.
+- Complete registration after the mandatory Amazon developer-experience category is resolved. Registration terms were authorized on 6 October 2026.
+- Final submission review and any final submission-specific agreement.
 - Public English demonstration video under three minutes.
 - Final truthful product/tool feedback and a draft-to-final eligibility review.
 - Decide whether a separate, meaningful open-source contribution will be prepared for the additional mini challenge; this prototype alone does not establish that requirement.
+
+Public source: https://github.com/carlosjunquerovila-afk/invictus-home-accord (MIT, setup instructions and tests published).
 
 Official source: https://amazonappdev2026.devpost.com/rules
