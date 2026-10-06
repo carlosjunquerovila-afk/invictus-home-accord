@@ -55,7 +55,7 @@ Tests exercise missing/withdrawn consent, stale proposals, conflicting resources
 
 ## Competition draft
 
-Prepared as a new project on 6 October 2026. `SUBMISSION_DRAFT.md` and `DEMO_SCRIPT.md` are preparation documents. No Amazon registration or submission is asserted. Public GitHub repository, working demo video, final product feedback, participant review, and acceptance of the contest terms remain outstanding.
+Prepared as a new project on 6 October 2026. `SUBMISSION_DRAFT.md` and `DEMO_SCRIPT.md` are preparation documents. No Amazon registration or submission is asserted. The source is now public at https://github.com/carlosjunquerovila-afk/invictus-home-accord with the MIT license. A public working demo video, final product feedback, and complete registration/submission remain outstanding. Registration terms were authorized by the participant on 6 October 2026; the mandatory Amazon experience category is not yet resolved.
 
 Official rules: https://amazonappdev2026.devpost.com/rules
 
