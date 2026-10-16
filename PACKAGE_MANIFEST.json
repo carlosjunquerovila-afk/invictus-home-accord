@@ -2,7 +2,7 @@
   "package": "Home Accord jury distribution 2026-10-16",
   "version": "0.2.0",
   "author": "Carlosjv",
-  "prepared_at": "2026-10-16T16:18:04.621387+02:00",
+  "prepared_at": "2026-10-16T16:26:04.509058+02:00",
   "public_demo": {
     "url": "https://www.youtube.com/watch?v=jUKCHt0pncw",
     "duration_seconds": 138,
@@ -84,8 +84,8 @@
     },
     {
       "path": "agent_demo/EVIDENCE_SUMMARY.json",
-      "bytes": 3136,
-      "sha256": "9b27252696ac8c5bd3af1251c4a913d5fd9bae7ec1eee526a44a76a2ad326490"
+      "bytes": 3345,
+      "sha256": "c67a8b68a8af234d9119f84e430b7ca7aa6c2c13d9411862a77f7afd23a3f255"
     },
     {
       "path": "agent_demo/PUBLICATION_REPLAY_CHECK.json",
@@ -94,8 +94,8 @@
     },
     {
       "path": "agent_demo/README.md",
-      "bytes": 6433,
-      "sha256": "e14e254742f59d6cfdd0e0709259f96a73670f81142669b8d909881a9e75fbdb"
+      "bytes": 6515,
+      "sha256": "86fec9a77fcef0df18487100c025533c6b5752a33d250e2c105ae275699ee643"
     },
     {
       "path": "agent_demo/agent_mcp_client.py",
@@ -154,13 +154,13 @@
     },
     {
       "path": "demo_video/MANIFEST.json",
-      "bytes": 2865,
-      "sha256": "d2e7444e86583124857568ef31afdfa1b01f753551624af14103bc71f2ab06cc"
+      "bytes": 3174,
+      "sha256": "66ea2d4466514f6c48392723668fb86926c32d2525037b602c730f0e5d41f012"
     },
     {
       "path": "demo_video/README.md",
-      "bytes": 5083,
-      "sha256": "6a14bb36798329c0873befe190a0225b5a346d1f949c7e6e444542b201876224"
+      "bytes": 5249,
+      "sha256": "64745d9c80743911d6458c650bc4fc550f348a66d676d5b522faf94f944bec6a"
     },
     {
       "path": "demo_video/VIDEO_SCRIPT.md",
