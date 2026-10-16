@@ -1,0 +1,83 @@
+{
+  "created_date": "2026-10-16",
+  "video": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "r_frame_rate": "12/1",
+        "nb_frames": "1656"
+      }
+    ],
+    "format": {
+      "duration": "138.000000",
+      "size": "1132334"
+    }
+  },
+  "recording_method": "animated execution viewer of newly executed real local MCP HTTP replay; not browser/desktop screen capture",
+  "inference": "No new model inference in this replay. Commands originated in prior live sequential ChatGPT-agent interaction.",
+  "audio": "none; English captions burned in and provided as SRT",
+  "replay_started_at": "2026-10-16T11:06:09.010391+00:00",
+  "replay_ended_at": "2026-10-16T11:06:09.156534+00:00",
+  "source_sha256": {
+    "app.py": "7a874ea5d8bb0665fdb94fb9e27fc9635d931d3df02c93f9808d3ff7782ef561",
+    "mcp_server.py": "4d58f777fca97a61d133bfb8b26e73f228675dc35290d2a30e6c32c10ec225a1"
+  },
+  "source_unchanged_after_recording": true,
+  "trace_verifier": "PASS",
+  "visual_qa": "Inspected request/proposal, refusal, approvals, committed agenda, restored agenda; decoded MP4 frame inspected separately",
+  "decode_check": "ffmpeg full decode completed with exit 0",
+  "official_rules_url": "https://amazonappdev2026.devpost.com/rules",
+  "official_rules_checked_date": "2026-10-16",
+  "publication": "not uploaded; no external publication by this task",
+  "files": [
+    {
+      "name": "Home_Accord_Demo_138s.mp4",
+      "bytes": 1132334,
+      "sha256": "77a2431e4d8ca210aabc6a03a4f8cd85d76e3ae3c016f65f647c58e60727d8fe"
+    },
+    {
+      "name": "Home_Accord_Demo_en.srt",
+      "bytes": 2309,
+      "sha256": "3e4a3cff59f22b310f2da4779306a3fbc2f38429880172811e17922445a875ae"
+    },
+    {
+      "name": "VIDEO_SCRIPT.md",
+      "bytes": 2988,
+      "sha256": "0319b55dec97c63bc7d1c76c8d3b2c1e1c3ee817d5651505dbaff83da6788d07"
+    },
+    {
+      "name": "recorded_execution.json",
+      "bytes": 43282,
+      "sha256": "b17af84e861a991eca05eb8c1111269e56206f5a057799b2ad63aa154bd9fa54"
+    },
+    {
+      "name": "recorded_terminal.jsonl",
+      "bytes": 27479,
+      "sha256": "ebd7e61d304fe095d05fd8c2f792a34c1381a12f0795517e22f2dfd8b5c268b8"
+    },
+    {
+      "name": "execution_verification.json",
+      "bytes": 376,
+      "sha256": "315aed9e19db55d44710f38dc9bb769be5f29b8faadd17a71f424ffbfa5e7f86"
+    },
+    {
+      "name": "render_demo.py",
+      "bytes": 18849,
+      "sha256": "909e69244279a4ec7fd471113e8c381dd496475926c30a5a1da201186a9db66e"
+    },
+    {
+      "name": "README.md",
+      "bytes": 5249,
+      "sha256": "64745d9c80743911d6458c650bc4fc550f348a66d676d5b522faf94f944bec6a"
+    }
+  ],
+  "packaging_note": "Relative documentation paths and current file hashes updated for this release; application, original trace, replay trace, video and renderer unchanged. The publication field records the recording task status; the later public upload is recorded below.",
+  "publication_update": {
+    "published_date": "2026-10-16",
+    "public_video_url": "https://www.youtube.com/watch?v=jUKCHt0pncw",
+    "scope": "Public video; does not certify final Devpost submission"
+  }
+}
