@@ -183,6 +183,11 @@ class Accord:
             return result
 
 class Handler(BaseHTTPRequestHandler):
+    def valid_host(self):
+        values = self.headers.get_all('Host') or []
+        return len(values) == 1 and values[0] in {
+            f'127.0.0.1:{self.server.server_port}', f'localhost:{self.server.server_port}'}
+
     def send(self, status, value, content_type='application/json'):
         data = json.dumps(value).encode() if content_type == 'application/json' else value
         self.send_response(status)
@@ -192,6 +197,8 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_GET(self):
+        if not self.valid_host():
+            return self.send(403, {'error': 'Unexpected host refused.'})
         if self.path == '/':
             return self.send(200, Path(__file__).with_name('index.html').read_bytes(), 'text/html; charset=utf-8')
         if self.path == '/state':
@@ -201,9 +208,11 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             # Same-origin localhost interface only; refuse cross-site browser mutation.
-            origin = self.headers.get('Origin')
+            if not self.valid_host():
+                return self.send(403, {'error': 'Unexpected host refused.'})
+            origins = self.headers.get_all('Origin') or []
             expected = f'http://{self.headers.get("Host")}'
-            if origin and origin != expected:
+            if origins != [expected]:
                 return self.send(403, {'error': 'Cross-origin action refused.'})
             size = int(self.headers.get('Content-Length', 0))
             if size > 32768:

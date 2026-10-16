@@ -17,8 +17,7 @@ class HTTPWorkflow(unittest.TestCase):
             thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
             root=f'http://127.0.0.1:{server.server_port}'
             def post(path,payload,origin=None):
-                headers={'Content-Type':'application/json'}
-                if origin:headers['Origin']=origin
+                headers={'Content-Type':'application/json','Origin':origin or root}
                 with urlopen(Request(root+path,json.dumps(payload).encode(),headers),timeout=2) as response:return json.load(response)
             try:
                 with urlopen(root,timeout=2) as response:
@@ -33,6 +32,30 @@ class HTTPWorkflow(unittest.TestCase):
                 with urlopen(root+'/state',timeout=2) as response:self.assertEqual(len(json.load(response)['tasks']),1)
                 post('/undo',{'id':receipt['id']})
                 with urlopen(root+'/state',timeout=2) as response:self.assertEqual(json.load(response)['tasks'],[])
+            finally:
+                server.shutdown();server.server_close();thread.join(timeout=2)
+
+    def test_rebinding_host_and_missing_or_cross_origin_are_refused(self):
+        import http.client
+        from contextlib import closing
+        with tempfile.TemporaryDirectory() as tmp:
+            server=ThreadingHTTPServer(('127.0.0.1',0),QuietHandler)
+            server.accord=Accord(Path(tmp)/'state.json')
+            thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+            try:
+                before=server.accord.snapshot()
+                for host,origin in [('attacker.example','http://attacker.example'),
+                    (f'127.0.0.1:{server.server_port}','https://untrusted.example'),
+                    (f'127.0.0.1:{server.server_port}',None)]:
+                    headers={'Host':host,'Content-Type':'application/json'}
+                    if origin is not None:headers['Origin']=origin
+                    with closing(http.client.HTTPConnection('127.0.0.1',server.server_port,timeout=2)) as c:
+                        c.request('POST','/cap',json.dumps({'cap':3000}),headers)
+                        response=c.getresponse();response.read();self.assertEqual(response.status,403)
+                with closing(http.client.HTTPConnection('127.0.0.1',server.server_port,timeout=2)) as c:
+                    c.request('GET','/state',headers={'Host':'attacker.example'})
+                    response=c.getresponse();response.read();self.assertEqual(response.status,403)
+                self.assertEqual(server.accord.snapshot(),before)
             finally:
                 server.shutdown();server.server_close();thread.join(timeout=2)
 

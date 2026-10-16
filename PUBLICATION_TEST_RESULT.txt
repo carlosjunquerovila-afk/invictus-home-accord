@@ -1,0 +1,28 @@
+test_double_commit_rejected_and_receipt_hash_valid (test_app.Invariants.test_double_commit_rejected_and_receipt_hash_valid) ... ok
+test_failed_disk_commit_rolls_back_memory_and_disk (test_app.Invariants.test_failed_disk_commit_rolls_back_memory_and_disk) ... ok
+test_impossible_request_leaves_no_mutation (test_app.Invariants.test_impossible_request_leaves_no_mutation) ... ok
+test_invalid_input_and_cap_below_committed_usage (test_app.Invariants.test_invalid_input_and_cap_below_committed_usage) ... ok
+test_limit_revision_invalidates_consent (test_app.Invariants.test_limit_revision_invalidates_consent) ... ok
+test_no_commit_without_all_consents (test_app.Invariants.test_no_commit_without_all_consents) ... ok
+test_no_undo_overwrites_later_changes (test_app.Invariants.test_no_undo_overwrites_later_changes) ... ok
+test_schedule_respects_power_and_single_resource (test_app.Invariants.test_schedule_respects_power_and_single_resource) ... ok
+test_stale_proposal_rejected_after_other_commit (test_app.Invariants.test_stale_proposal_rejected_after_other_commit) ... ok
+test_undo_restores_exact_agenda_and_persists (test_app.Invariants.test_undo_restores_exact_agenda_and_persists) ... ok
+test_withdrawal_blocks_commit (test_app.Invariants.test_withdrawal_blocks_commit) ... ok
+test_real_http_consent_commit_and_undo (test_http.HTTPWorkflow.test_real_http_consent_commit_and_undo) ... ok
+test_rebinding_host_and_missing_or_cross_origin_are_refused (test_http.HTTPWorkflow.test_rebinding_host_and_missing_or_cross_origin_are_refused) ... ok
+test_auth_origin_host_and_media_type_fail_before_mutation (test_mcp.MCPWireTests.test_auth_origin_host_and_media_type_fail_before_mutation) ... ok
+test_consent_withdrawal_and_stale_plan_are_refused (test_mcp.MCPWireTests.test_consent_withdrawal_and_stale_plan_are_refused) ... ok
+test_demo_consent_must_be_enabled_by_operator (test_mcp.MCPWireTests.test_demo_consent_must_be_enabled_by_operator) ... ok
+test_duplicate_request_and_closed_proposal_cannot_double_commit (test_mcp.MCPWireTests.test_duplicate_request_and_closed_proposal_cannot_double_commit) ... ok
+test_http_persistence_failure_rolls_back_and_redacts_path (test_mcp.MCPWireTests.test_http_persistence_failure_rolls_back_and_redacts_path) ... ok
+test_input_validation_keeps_state_unchanged (test_mcp.MCPWireTests.test_input_validation_keeps_state_unchanged) ... ok
+test_lifecycle_negotiation_version_and_termination (test_mcp.MCPWireTests.test_lifecycle_negotiation_version_and_termination) ... ok
+test_malformed_wire_and_unhashable_tool_names_do_not_crash (test_mcp.MCPWireTests.test_malformed_wire_and_unhashable_tool_names_do_not_crash) ... ok
+test_notifications_never_execute_tools_or_emit_rpc_responses (test_mcp.MCPWireTests.test_notifications_never_execute_tools_or_emit_rpc_responses) ... ok
+test_real_http_handshake_four_tools_commit_and_undo (test_mcp.MCPWireTests.test_real_http_handshake_four_tools_commit_and_undo) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 6.433s
+
+OK

@@ -1,66 +1,122 @@
-# Invictus Home Accord
+# Home Accord 0.2.0
 
-A **local Alexa+ experience simulation**: a bounded multi-turn conversation turns competing household appliance requests into an agreed, reversible agenda. No Amazon integration, external API, runtime language model, speech recognition, or physical appliance control is implemented.
+**Agree before the shared home acts.** A local simulated Alexa+ experience with a real Streamable HTTP MCP server: propose a household agenda, obtain scoped simulated consent, commit, inspect and undo.
 
-## Run
+**Current evidence, 16 October 2026:** 23 internal tests pass. An external ChatGPT agent completed 13 JSON-RPC exchanges, including 11 tool calls, against a separate local MCP server process. The agent adapted its request after a refusal and completed a consent-gated, reversible agenda change. Recorded-command replay also passes.
 
-Requires Python 3.10+ and a modern browser; no packages, keys, cloud account, or network services required.
+The household and approvals are simulated. There is no Alexa connection, runtime LLM embedded in the app, native ChatGPT MCP connector, authenticated resident or physical appliance control. The competition path is the **Alexa+ simulated experience**; the implemented MCP surface is an additional runnable interface.
+
+## Quick start
+
+Python 3.10 or later and a modern browser are sufficient. No packages, API key, paid service or external network account are required.
 
 ```sh
 python3 app.py
 ```
 
-Open http://127.0.0.1:8765. Data is stored in `state.json` next to the application. For an isolated session:
+Open `http://127.0.0.1:8765`. The default state is stored in `state.json` next to the application. For a separate session:
 
 ```sh
-python3 app.py --port 8765 --state /tmp/home-accord-demo.json
+python3 app.py --port 8765 --state ./home-accord-web-demo.json
 ```
 
-## Walk through the agent simulation
+In the browser, type `plan my evening`, then try `commit` before approval. The engine refuses it. Use `approve as Alice` and `approve as Bob`, then `commit`, `show agenda` and `undo`. These are explicitly simulated roles. Forms also expose requests and constraints. The command interface is a documented grammar, not unrestricted AI conversation.
 
-1. Type `plan my evening`. The agent proposes a washing machine, dishwasher, and dryer schedule.
-2. Type `commit` immediately. The backend refuses missing consent.
-3. Type `approve as Alice`, then `approve as Bob`. Each approval applies to this exact proposal and household version.
-4. Type `commit`. The local agenda changes and a receipt records simulated approvals and before/after hashes.
-5. Type `undo`. The previous agenda returns, with a reversal receipt.
-6. Try a new proposal, then `power 3000`. The changed household version invalidates earlier proposals and approvals.
+Stop the process with Ctrl+C. Use synthetic data. Keep state files private and let only one process own a state file; the web and MCP interfaces must use different files.
 
-Other commands: `withdraw as Alice`, `withdraw as Bob`, `show agenda`. Form controls provide the same real backend operations and custom windows/durations.
+## Reproduce the verification pipeline
 
-## What works
-
-- Single-process persistent state, atomically replaced JSON file, lock around mutations, and in-memory rollback on failed persistence.
-- Deterministic greedy planning in 15-minute slots across a relative 180-minute horizon.
-- Fixed appliance power ratings and exclusive resource constraints, alongside a shared power ceiling.
-- No agenda commit until both simulated residents approve the exact current proposal.
-- Version checks prevent approval replay against an agenda or power limit that changed.
-- Reversal only of the latest unchanged commit; later work is never overwritten by undo.
-- Hash-linked local receipts, input validation, request-size limit, loopback binding, and cross-origin browser mutation refusal.
-
-## Honest boundaries
-
-This is an agent **workflow simulation**, not a deployed Alexa integration and not unrestricted AI conversation. The browser accepts a listed command grammar. Resident labels are selectable demo roles, **not authenticated identities**. Running this on a public server would require real authentication, authorization, CSRF protection, and stronger storage controls. Do not use private household data.
-
-The planner is greedy, not globally optimal. A failed placement means this algorithm did not find a schedule, not a proof that none exists. It does not model dryer-after-washer dependencies, quiet hours, tariffs, device telemetry, safety interlocks, electricity-market data, or verified savings. Every task is independent. Power is a simplified fixed input rather than measured demand. Time is relative to the demo session, with no wall-clock execution.
-
-Receipts establish local consistency only. Anyone able to modify the persisted state can recompute hashes; receipts are not signed or externally anchored, and they do not prove identity, physical execution, or a tamper-proof log. Atomic replacement and rollback do not provide fsync-backed power-loss guarantees or multi-process transaction support.
-
-## Verify
+Run from the repository root:
 
 ```sh
 python3 -m unittest discover -s . -v
+python3 mcp_demo.py --output mcp_demo_result.json
+python3 agent_demo/verify_trace.py agent_demo/live_agent_trace.json
+python3 agent_demo/agent_mcp_client.py --source . --commands agent_demo/replay_commands.jsonl --output agent_replay.json
+python3 agent_demo/verify_trace.py agent_replay.json
 ```
 
-Tests exercise missing/withdrawn consent, stale proposals, conflicting resources and power constraints, reversal, persistence/reload, duplicate commits, invalid requests, and disk-failure rollback. See `TEST_RESULT.txt` for the observed run. These tests are local correctness evidence; no external judge score or award is established.
+The first command runs the 23 internal tests. `mcp_demo.py` starts a separate local server and exercises a complete simulated workflow. `verify_trace.py` audits stored evidence; it does not execute a model. The command replay starts a fresh local server with temporary state and explicit simulated-consent mode, performs real HTTP calls, then closes the session and process. It makes no new model inference.
 
-## Competition draft
+`agent_demo/live_agent_trace.json` records the original agent-directed run. Its SHA-256 is:
 
-Prepared as a new project on 6 October 2026. `SUBMISSION_DRAFT.md` and `DEMO_SCRIPT.md` are preparation documents. No Amazon registration or submission is asserted. The source is now public at https://github.com/carlosjunquerovila-afk/invictus-home-accord with the MIT license. A public working demo video, final product feedback, and complete registration/submission remain outstanding. Registration terms were authorized by the participant on 6 October 2026; the mandatory Amazon experience category is not yet resolved.
+```text
+a2063e6690828bf65bb9f8f2968aa4e07aa61f6d38d3961f3c39295f9f5e8c1b
+```
 
-Official rules: https://amazonappdev2026.devpost.com/rules
+## What the original agent actually did
 
-AI assistance: ChatGPT assisted research, architecture, implementation, and tests. The application itself uses deterministic scheduling and command parsing; it calls no generative model.
+| Step | Observation |
+|---|---|
+| Discover | Negotiated MCP 2025-11-25 and listed four tools. |
+| Read | Observed the empty agenda and a 2,500 W ceiling. |
+| Propose | Three 60-minute tasks requested within 60 minutes were refused by the planner. |
+| Adapt | Widened the completion windows to 180 minutes without changing the power ceiling. |
+| Attempt commit | Refused because both simulated residents had not approved. |
+| Approve and commit | Recorded Alice/Bob demo approvals; committed three tasks at state version 1. |
+| Inspect | Read a peak scheduled fixed demand of 2,000 W, below the unchanged ceiling. |
+| Undo and inspect | Restored the original empty task list at version 2 and read it back. |
 
-## License
+The ChatGPT agent selected each action after observing responses through tool execution and a Python transport client. The client contains no model. The application itself remains deterministic. The recorded-command demonstration replays those choices and must not be presented as another live AI decision sequence.
 
-MIT. Copyright 2026 Carlosjv.
+These observations describe one synthetic household. Relative planning minutes are not elapsed appliance execution. The dryer task is independent of the washing-machine task; no dependency is modeled.
+
+## MCP interface
+
+| Tool | Operation |
+|---|---|
+| `accord_state` | Read simulated agenda, proposals and receipts. |
+| `accord_propose` | Add a proposal without changing the committed agenda. |
+| `accord_consent` | Grant or withdraw a demo role's approval of one exact proposal. |
+| `accord_transition` | Commit after both approvals, or undo the latest unchanged commit. |
+
+The server targets MCP protocol 2025-11-25 over Streamable HTTP at `/mcp`. It supports initialization, tool discovery/calls, sessions, ping and session deletion. JSON responses are used; no unsolicited SSE stream, sampling, tasks, resources or prompt capabilities are advertised. This implementation has local tests, not a formal conformance certificate.
+
+To connect a compatible local host, set `HOME_ACCORD_MCP_TOKEN` privately to a random URL-safe value of 32–256 characters, then run:
+
+```sh
+python3 mcp_server.py --port 8766 --state ./home-accord-mcp-demo.json
+```
+
+Configure the host for `http://127.0.0.1:8766/mcp` with the corresponding bearer header. Simulated consent and commit/undo are disabled unless the server is explicitly started with `--demo-consent`. That flag acknowledges a simulation; it does not authenticate Alice or Bob. Do not expose the server publicly or publish its token.
+
+`MCP_GUIDE.md` contains transport details. The current guide and dated `agent_demo/` evidence describe the external agent run.
+
+## Design and trust boundaries
+
+- Scheduling is deterministic and greedy in 15-minute slots over a relative 180-minute horizon. A failed placement is not a general proof that no schedule exists.
+- Fixed power ratings and exclusive resources are simplified inputs. There is no telemetry, tariff optimization, quiet-hours model, device interlock or measured energy saving.
+- Consent is attached to the exact proposal and household version. A changed agenda or ceiling invalidates stale approvals. Simulated roles are not real identities.
+- Undo applies only to the latest unchanged commit. It must not overwrite later work.
+- Mutations are locked within one process; state uses atomic file replacement and in-memory rollback on failed writes. This does not provide multi-process transactions or fsync-backed power-loss guarantees.
+- Local hash-linked receipts establish consistency, not authenticated identity, device execution or independent notarization. A privileged local owner can modify state and recompute hashes.
+
+## Project history
+
+The original project and repository were prepared on 6 October 2026 as a local web simulation. The current 0.2.0 candidate adds MCP transport, transport/security regression coverage and the external-agent trace of 16 October. The current 23-test total consists of 12 inherited tests, ten MCP HTTP tests and one additional legacy HTTP security test.
+
+`TEST_RESULT.txt` and `AUDIT_REVIEW.json` are retained historical technical records. Their earlier counts and absence-of-agent statements are not the current result. Current execution evidence is in `agent_demo/EVIDENCE_SUMMARY.json`, `agent_demo/BASELINE_TEST_RESULT.txt`, `agent_demo/live_agent_trace.json` and the replay record.
+
+## Submission and attribution
+
+Public author: **Carlosjv**. MIT licensed; the original license notice is retained. ChatGPT assisted research, design, implementation, testing and adversarial review. These reviews are internal, not an independent external audit.
+
+Read `PROJECT_FEEDBACK.md` for tools actually used and `FRICTION_LOG.md` for observed onboarding feedback. No Amazon SDK, AWS runtime, deployed Alexa integration, customer adoption or revenue is claimed. The repository is the runnable prototype and its evidence; a final Devpost submission requires its own confirmation.
+
+Official track requirements: https://amazonappdev2026.devpost.com/rules . The simulated-experience option is described under **Submission Requirements → Alexa+**. The MCP specification reference is https://modelcontextprotocol.io/specification/2025-11-25 .
+
+## Included release assets
+
+- `demo_video/Home_Accord_Demo_138s.mp4`: 138-second English-captioned execution viewer of a recorded real HTTP replay, with no audio track. It is not browser screen capture or fresh AI inference.
+- `demo_video/Home_Accord_Demo_en.srt`: matching English subtitles.
+- `demo_video/README.md`: recording method, limitations and optional renderer dependencies.
+- `DEVPOST_STORY.md`, `PROJECT_FEEDBACK.md`, `FRICTION_LOG.md`: English submission materials.
+- `PACKAGE_MANIFEST.json`: source preservation checks and file hashes for this release.
+
+The source files and dated technical evidence remain in the package. Account and publication-operation records are omitted from this jury distribution. Documentation path changes do not alter application behavior.
+
+## Public demonstration
+
+https://www.youtube.com/watch?v=jUKCHt0pncw
+
+Published 16 October 2026; 2:18, English captions embedded. This is a recorded HTTP execution viewer. This archive does not certify repository publication or final Devpost submission.
