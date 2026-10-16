@@ -1,0 +1,1039 @@
+{
+  "started_at": "2026-10-16T10:50:09.783997+00:00",
+  "protocol": "2025-11-25",
+  "interaction_mode": "interactive decisions after observed responses",
+  "operator_label": "ChatGPT agent home_agent_demo; agent-directed calls through exec; not authenticated residents",
+  "transport": "Python standard-library HTTP client to separate loopback MCP server process",
+  "synthetic_household": true,
+  "simulated_consent_explicitly_enabled": true,
+  "resident_identity_authenticated": false,
+  "alexa_integrated": false,
+  "physical_devices_controlled": false,
+  "native_mcp_host_or_connector": false,
+  "independent_protocol_certification": false,
+  "source_sha256": {
+    "app.py": "7a874ea5d8bb0665fdb94fb9e27fc9635d931d3df02c93f9808d3ff7782ef561",
+    "mcp_server.py": "4d58f777fca97a61d133bfb8b26e73f228675dc35290d2a30e6c32c10ec225a1"
+  },
+  "events": [
+    {
+      "at": "2026-10-16T10:50:09.857787+00:00",
+      "step": "initialize",
+      "http_status": 200,
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+          "protocolVersion": "2025-11-25",
+          "capabilities": {},
+          "clientInfo": {
+            "name": "home-accord-interactive-agent-transport",
+            "version": "1.0"
+          }
+        }
+      },
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "protocolVersion": "2025-11-25",
+          "capabilities": {
+            "tools": {
+              "listChanged": false
+            }
+          },
+          "serverInfo": {
+            "name": "invictus-home-accord",
+            "version": "0.2.0"
+          },
+          "instructions": "Local household simulation only. Resident labels are not identities; no Alexa or appliance control. Never infer physical execution from a receipt."
+        }
+      },
+      "initialized_notification_status": 202
+    },
+    {
+      "at": "2026-10-16T10:50:14.569764+00:00",
+      "decision_before_call": "Discover the published MCP contracts before deciding which household operations to request.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "tools/list",
+        "params": {}
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "result": {
+          "tools": [
+            {
+              "name": "accord_state",
+              "title": "Read simulated household",
+              "description": "Read the local demo agenda, proposals and simulated receipts. No appliance telemetry.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "accord_propose",
+              "title": "Propose household agenda",
+              "description": "Persist a proposal using the existing greedy planner. Does not commit an agenda or operate devices. A placement failure is not proof of infeasibility.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "requests": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 8,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "owner": {
+                          "type": "string",
+                          "enum": [
+                            "Alice",
+                            "Bob"
+                          ]
+                        },
+                        "appliance": {
+                          "type": "string",
+                          "enum": [
+                            "Dishwasher",
+                            "Washing machine",
+                            "Dryer"
+                          ]
+                        },
+                        "duration": {
+                          "type": "integer",
+                          "minimum": 15,
+                          "maximum": 180,
+                          "multipleOf": 15
+                        },
+                        "earliest": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 180,
+                          "multipleOf": 15
+                        },
+                        "latest": {
+                          "type": "integer",
+                          "minimum": 15,
+                          "maximum": 180,
+                          "multipleOf": 15
+                        }
+                      },
+                      "required": [
+                        "owner",
+                        "appliance",
+                        "duration",
+                        "earliest",
+                        "latest"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "requests"
+                ],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": false,
+                "destructiveHint": false,
+                "idempotentHint": false,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "accord_consent",
+              "title": "Record simulated consent",
+              "description": "DEMO ONLY: select Alice or Bob to grant or withdraw simulated consent for an exact proposal. This does not authenticate a person. Requires explicit demo consent enabled at server startup.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "plan_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "resident": {
+                    "type": "string",
+                    "enum": [
+                      "Alice",
+                      "Bob"
+                    ]
+                  },
+                  "approved": {
+                    "type": "boolean"
+                  },
+                  "simulation_acknowledged": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                },
+                "required": [
+                  "plan_id",
+                  "resident",
+                  "approved",
+                  "simulation_acknowledged"
+                ],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": false,
+                "destructiveHint": true,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "accord_transition",
+              "title": "Commit or undo simulated agenda",
+              "description": "Commit an exact proposal after both simulated approvals, or undo only the latest unchanged commit receipt. No physical execution. Requires explicit demo consent mode and confirmed=true.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "commit",
+                      "undo"
+                    ]
+                  },
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "confirmed": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                },
+                "required": [
+                  "action",
+                  "id",
+                  "confirmed"
+                ],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": false,
+                "destructiveHint": true,
+                "idempotentHint": false,
+                "openWorldHint": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:50:19.753737+00:00",
+      "decision_before_call": "The discovered read-only tool returns the actual planning state. Read it before selecting windows and appliance requests.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_state",
+          "arguments": {}
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"data\": {\"cap\": 2500, \"plans\": {}, \"receipts\": [], \"tasks\": [], \"version\": 0}, \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "data": {
+              "version": 0,
+              "cap": 2500,
+              "tasks": [],
+              "plans": {},
+              "receipts": []
+            }
+          },
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:50:29.656459+00:00",
+      "decision_before_call": "Observed empty agenda and 2500 W ceiling. The synthetic residents initially want all three independent tasks finished within 60 minutes. Ask the planner to assess that tight window; a failure is not treated as proof of global infeasibility.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_propose",
+          "arguments": {
+            "requests": [
+              {
+                "owner": "Alice",
+                "appliance": "Washing machine",
+                "duration": 60,
+                "earliest": 0,
+                "latest": 60
+              },
+              {
+                "owner": "Bob",
+                "appliance": "Dishwasher",
+                "duration": 60,
+                "earliest": 0,
+                "latest": 60
+              },
+              {
+                "owner": "Bob",
+                "appliance": "Dryer",
+                "duration": 60,
+                "earliest": 0,
+                "latest": 60
+              }
+            ]
+          }
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"error\": \"No feasible placement found by the greedy planner. Widen a window, reduce duration, or revise the power limit. This does not prove no feasible schedule exists.\", \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "error": "No feasible placement found by the greedy planner. Widen a window, reduce duration, or revise the power limit. This does not prove no feasible schedule exists."
+          },
+          "isError": true
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:50:35.327038+00:00",
+      "decision_before_call": "The planner rejected the tight windows. Check that this failed proposal did not create tasks or a durable plan before widening the synthetic request.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 5,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_state",
+          "arguments": {}
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 5,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"data\": {\"cap\": 2500, \"plans\": {}, \"receipts\": [], \"tasks\": [], \"version\": 0}, \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "data": {
+              "version": 0,
+              "cap": 2500,
+              "tasks": [],
+              "plans": {},
+              "receipts": []
+            }
+          },
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:50:44.693083+00:00",
+      "decision_before_call": "Observed the failed attempt left version 0, tasks and plans unchanged. Widen all completion windows to 180 minutes while preserving the 2500 W ceiling and 60-minute task durations. These are independent laundry/dish tasks, with no claimed dryer dependency.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 6,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_propose",
+          "arguments": {
+            "requests": [
+              {
+                "owner": "Alice",
+                "appliance": "Washing machine",
+                "duration": 60,
+                "earliest": 0,
+                "latest": 180
+              },
+              {
+                "owner": "Bob",
+                "appliance": "Dishwasher",
+                "duration": 60,
+                "earliest": 0,
+                "latest": 180
+              },
+              {
+                "owner": "Bob",
+                "appliance": "Dryer",
+                "duration": 60,
+                "earliest": 0,
+                "latest": 180
+              }
+            ]
+          }
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 6,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"data\": {\"additions\": [{\"appliance\": \"Washing machine\", \"duration\": 60, \"earliest\": 0, \"end\": 60, \"id\": \"adadb03a-53cc-4ebc-ac86-b710cbba95d9\", \"latest\": 180, \"owner\": \"Alice\", \"resource\": \"washer\", \"start\": 0, \"watts\": 1800}, {\"appliance\": \"Dishwasher\", \"duration\": 60, \"earliest\": 0, \"end\": 120, \"id\": \"543e2f34-230f-4d5d-ab7c-69729d6d78c4\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dishwasher\", \"start\": 60, \"watts\": 1000}, {\"appliance\": \"Dryer\", \"duration\": 60, \"earliest\": 0, \"end\": 180, \"id\": \"6f42ed31-e9ec-4e75-86c0-df5c17ba113b\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dryer\", \"start\": 120, \"watts\": 2000}], \"approvals\": [], \"base_version\": 0, \"cap\": 2500, \"id\": \"a3675969-d9b7-490a-a599-aa873216b2f9\", \"required\": [\"Alice\", \"Bob\"], \"status\": \"pending\"}, \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "data": {
+              "id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+              "base_version": 0,
+              "cap": 2500,
+              "additions": [
+                {
+                  "id": "adadb03a-53cc-4ebc-ac86-b710cbba95d9",
+                  "owner": "Alice",
+                  "appliance": "Washing machine",
+                  "watts": 1800,
+                  "resource": "washer",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 0,
+                  "end": 60
+                },
+                {
+                  "id": "543e2f34-230f-4d5d-ab7c-69729d6d78c4",
+                  "owner": "Bob",
+                  "appliance": "Dishwasher",
+                  "watts": 1000,
+                  "resource": "dishwasher",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 60,
+                  "end": 120
+                },
+                {
+                  "id": "6f42ed31-e9ec-4e75-86c0-df5c17ba113b",
+                  "owner": "Bob",
+                  "appliance": "Dryer",
+                  "watts": 2000,
+                  "resource": "dryer",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 120,
+                  "end": 180
+                }
+              ],
+              "required": [
+                "Alice",
+                "Bob"
+              ],
+              "approvals": [],
+              "status": "pending"
+            }
+          },
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:50:52.737711+00:00",
+      "decision_before_call": "Observed sequential slots 0–60 at 1800 W, 60–120 at 1000 W, 120–180 at 2000 W, all below 2500 W. No resident has approved. Deliberately request commit to verify the consent gate refuses this unauthorized simulated agenda change.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 7,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_transition",
+          "arguments": {
+            "action": "commit",
+            "id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+            "confirmed": true
+          }
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 7,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"error\": \"Every resident must approve this exact proposal before committing.\", \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "error": "Every resident must approve this exact proposal before committing."
+          },
+          "isError": true
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:51:06.145865+00:00",
+      "decision_before_call": "The backend refused commit until every resident approves the exact plan. In explicit demo-consent mode, record the synthetic Alice role approval; this is not a claim that a human Alice authenticated or consented.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 8,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_consent",
+          "arguments": {
+            "plan_id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+            "resident": "Alice",
+            "approved": true,
+            "simulation_acknowledged": true
+          }
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 8,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"data\": {\"additions\": [{\"appliance\": \"Washing machine\", \"duration\": 60, \"earliest\": 0, \"end\": 60, \"id\": \"adadb03a-53cc-4ebc-ac86-b710cbba95d9\", \"latest\": 180, \"owner\": \"Alice\", \"resource\": \"washer\", \"start\": 0, \"watts\": 1800}, {\"appliance\": \"Dishwasher\", \"duration\": 60, \"earliest\": 0, \"end\": 120, \"id\": \"543e2f34-230f-4d5d-ab7c-69729d6d78c4\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dishwasher\", \"start\": 60, \"watts\": 1000}, {\"appliance\": \"Dryer\", \"duration\": 60, \"earliest\": 0, \"end\": 180, \"id\": \"6f42ed31-e9ec-4e75-86c0-df5c17ba113b\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dryer\", \"start\": 120, \"watts\": 2000}], \"approvals\": [\"Alice\"], \"base_version\": 0, \"cap\": 2500, \"id\": \"a3675969-d9b7-490a-a599-aa873216b2f9\", \"required\": [\"Alice\", \"Bob\"], \"status\": \"pending\"}, \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "data": {
+              "id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+              "base_version": 0,
+              "cap": 2500,
+              "additions": [
+                {
+                  "id": "adadb03a-53cc-4ebc-ac86-b710cbba95d9",
+                  "owner": "Alice",
+                  "appliance": "Washing machine",
+                  "watts": 1800,
+                  "resource": "washer",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 0,
+                  "end": 60
+                },
+                {
+                  "id": "543e2f34-230f-4d5d-ab7c-69729d6d78c4",
+                  "owner": "Bob",
+                  "appliance": "Dishwasher",
+                  "watts": 1000,
+                  "resource": "dishwasher",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 60,
+                  "end": 120
+                },
+                {
+                  "id": "6f42ed31-e9ec-4e75-86c0-df5c17ba113b",
+                  "owner": "Bob",
+                  "appliance": "Dryer",
+                  "watts": 2000,
+                  "resource": "dryer",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 120,
+                  "end": 180
+                }
+              ],
+              "required": [
+                "Alice",
+                "Bob"
+              ],
+              "approvals": [
+                "Alice"
+              ],
+              "status": "pending"
+            }
+          },
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:51:11.768562+00:00",
+      "decision_before_call": "Observed only Alice in approvals; Bob is still required. Record Bob as the second explicitly simulated role on the same proposal and base version.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 9,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_consent",
+          "arguments": {
+            "plan_id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+            "resident": "Bob",
+            "approved": true,
+            "simulation_acknowledged": true
+          }
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 9,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"data\": {\"additions\": [{\"appliance\": \"Washing machine\", \"duration\": 60, \"earliest\": 0, \"end\": 60, \"id\": \"adadb03a-53cc-4ebc-ac86-b710cbba95d9\", \"latest\": 180, \"owner\": \"Alice\", \"resource\": \"washer\", \"start\": 0, \"watts\": 1800}, {\"appliance\": \"Dishwasher\", \"duration\": 60, \"earliest\": 0, \"end\": 120, \"id\": \"543e2f34-230f-4d5d-ab7c-69729d6d78c4\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dishwasher\", \"start\": 60, \"watts\": 1000}, {\"appliance\": \"Dryer\", \"duration\": 60, \"earliest\": 0, \"end\": 180, \"id\": \"6f42ed31-e9ec-4e75-86c0-df5c17ba113b\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dryer\", \"start\": 120, \"watts\": 2000}], \"approvals\": [\"Alice\", \"Bob\"], \"base_version\": 0, \"cap\": 2500, \"id\": \"a3675969-d9b7-490a-a599-aa873216b2f9\", \"required\": [\"Alice\", \"Bob\"], \"status\": \"pending\"}, \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "data": {
+              "id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+              "base_version": 0,
+              "cap": 2500,
+              "additions": [
+                {
+                  "id": "adadb03a-53cc-4ebc-ac86-b710cbba95d9",
+                  "owner": "Alice",
+                  "appliance": "Washing machine",
+                  "watts": 1800,
+                  "resource": "washer",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 0,
+                  "end": 60
+                },
+                {
+                  "id": "543e2f34-230f-4d5d-ab7c-69729d6d78c4",
+                  "owner": "Bob",
+                  "appliance": "Dishwasher",
+                  "watts": 1000,
+                  "resource": "dishwasher",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 60,
+                  "end": 120
+                },
+                {
+                  "id": "6f42ed31-e9ec-4e75-86c0-df5c17ba113b",
+                  "owner": "Bob",
+                  "appliance": "Dryer",
+                  "watts": 2000,
+                  "resource": "dryer",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 120,
+                  "end": 180
+                }
+              ],
+              "required": [
+                "Alice",
+                "Bob"
+              ],
+              "approvals": [
+                "Alice",
+                "Bob"
+              ],
+              "status": "pending"
+            }
+          },
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:51:17.192340+00:00",
+      "decision_before_call": "The observed proposal now carries both required demo approvals. Apply this exact agenda proposal, then verify state separately rather than inferring task execution from the receipt.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 10,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_transition",
+          "arguments": {
+            "action": "commit",
+            "id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+            "confirmed": true
+          }
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 10,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"data\": {\"after_hash\": \"7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7\", \"approvals\": [\"Alice\", \"Bob\"], \"before_hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"before_tasks\": [], \"hash\": \"8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85\", \"id\": \"c9f99824-fe80-4134-b39d-fe637e8842f4\", \"kind\": \"commit\", \"plan_id\": \"a3675969-d9b7-490a-a599-aa873216b2f9\", \"previous_hash\": null, \"version\": 1}, \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "data": {
+              "id": "c9f99824-fe80-4134-b39d-fe637e8842f4",
+              "kind": "commit",
+              "version": 1,
+              "before_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "after_hash": "7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7",
+              "previous_hash": null,
+              "plan_id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+              "approvals": [
+                "Alice",
+                "Bob"
+              ],
+              "before_tasks": [],
+              "hash": "8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85"
+            }
+          },
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:51:22.502831+00:00",
+      "decision_before_call": "A commit receipt returned version 1. Read the actual persisted agenda to confirm exactly three tasks and calculate the maximum scheduled power before testing reversal.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 11,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_state",
+          "arguments": {}
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 11,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"data\": {\"cap\": 2500, \"plans\": {\"a3675969-d9b7-490a-a599-aa873216b2f9\": {\"additions\": [{\"appliance\": \"Washing machine\", \"duration\": 60, \"earliest\": 0, \"end\": 60, \"id\": \"adadb03a-53cc-4ebc-ac86-b710cbba95d9\", \"latest\": 180, \"owner\": \"Alice\", \"resource\": \"washer\", \"start\": 0, \"watts\": 1800}, {\"appliance\": \"Dishwasher\", \"duration\": 60, \"earliest\": 0, \"end\": 120, \"id\": \"543e2f34-230f-4d5d-ab7c-69729d6d78c4\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dishwasher\", \"start\": 60, \"watts\": 1000}, {\"appliance\": \"Dryer\", \"duration\": 60, \"earliest\": 0, \"end\": 180, \"id\": \"6f42ed31-e9ec-4e75-86c0-df5c17ba113b\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dryer\", \"start\": 120, \"watts\": 2000}], \"approvals\": [\"Alice\", \"Bob\"], \"base_version\": 0, \"cap\": 2500, \"id\": \"a3675969-d9b7-490a-a599-aa873216b2f9\", \"required\": [\"Alice\", \"Bob\"], \"status\": \"committed\"}}, \"receipts\": [{\"after_hash\": \"7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7\", \"approvals\": [\"Alice\", \"Bob\"], \"before_hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"before_tasks\": [], \"hash\": \"8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85\", \"id\": \"c9f99824-fe80-4134-b39d-fe637e8842f4\", \"kind\": \"commit\", \"plan_id\": \"a3675969-d9b7-490a-a599-aa873216b2f9\", \"previous_hash\": null, \"version\": 1}], \"tasks\": [{\"appliance\": \"Washing machine\", \"duration\": 60, \"earliest\": 0, \"end\": 60, \"id\": \"adadb03a-53cc-4ebc-ac86-b710cbba95d9\", \"latest\": 180, \"owner\": \"Alice\", \"resource\": \"washer\", \"start\": 0, \"watts\": 1800}, {\"appliance\": \"Dishwasher\", \"duration\": 60, \"earliest\": 0, \"end\": 120, \"id\": \"543e2f34-230f-4d5d-ab7c-69729d6d78c4\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dishwasher\", \"start\": 60, \"watts\": 1000}, {\"appliance\": \"Dryer\", \"duration\": 60, \"earliest\": 0, \"end\": 180, \"id\": \"6f42ed31-e9ec-4e75-86c0-df5c17ba113b\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dryer\", \"start\": 120, \"watts\": 2000}], \"version\": 1}, \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "data": {
+              "version": 1,
+              "cap": 2500,
+              "tasks": [
+                {
+                  "id": "adadb03a-53cc-4ebc-ac86-b710cbba95d9",
+                  "owner": "Alice",
+                  "appliance": "Washing machine",
+                  "watts": 1800,
+                  "resource": "washer",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 0,
+                  "end": 60
+                },
+                {
+                  "id": "543e2f34-230f-4d5d-ab7c-69729d6d78c4",
+                  "owner": "Bob",
+                  "appliance": "Dishwasher",
+                  "watts": 1000,
+                  "resource": "dishwasher",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 60,
+                  "end": 120
+                },
+                {
+                  "id": "6f42ed31-e9ec-4e75-86c0-df5c17ba113b",
+                  "owner": "Bob",
+                  "appliance": "Dryer",
+                  "watts": 2000,
+                  "resource": "dryer",
+                  "duration": 60,
+                  "earliest": 0,
+                  "latest": 180,
+                  "start": 120,
+                  "end": 180
+                }
+              ],
+              "plans": {
+                "a3675969-d9b7-490a-a599-aa873216b2f9": {
+                  "id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+                  "base_version": 0,
+                  "cap": 2500,
+                  "additions": [
+                    {
+                      "id": "adadb03a-53cc-4ebc-ac86-b710cbba95d9",
+                      "owner": "Alice",
+                      "appliance": "Washing machine",
+                      "watts": 1800,
+                      "resource": "washer",
+                      "duration": 60,
+                      "earliest": 0,
+                      "latest": 180,
+                      "start": 0,
+                      "end": 60
+                    },
+                    {
+                      "id": "543e2f34-230f-4d5d-ab7c-69729d6d78c4",
+                      "owner": "Bob",
+                      "appliance": "Dishwasher",
+                      "watts": 1000,
+                      "resource": "dishwasher",
+                      "duration": 60,
+                      "earliest": 0,
+                      "latest": 180,
+                      "start": 60,
+                      "end": 120
+                    },
+                    {
+                      "id": "6f42ed31-e9ec-4e75-86c0-df5c17ba113b",
+                      "owner": "Bob",
+                      "appliance": "Dryer",
+                      "watts": 2000,
+                      "resource": "dryer",
+                      "duration": 60,
+                      "earliest": 0,
+                      "latest": 180,
+                      "start": 120,
+                      "end": 180
+                    }
+                  ],
+                  "required": [
+                    "Alice",
+                    "Bob"
+                  ],
+                  "approvals": [
+                    "Alice",
+                    "Bob"
+                  ],
+                  "status": "committed"
+                }
+              },
+              "receipts": [
+                {
+                  "id": "c9f99824-fe80-4134-b39d-fe637e8842f4",
+                  "kind": "commit",
+                  "version": 1,
+                  "before_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                  "after_hash": "7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7",
+                  "previous_hash": null,
+                  "plan_id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+                  "approvals": [
+                    "Alice",
+                    "Bob"
+                  ],
+                  "before_tasks": [],
+                  "hash": "8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85"
+                }
+              ]
+            }
+          },
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:51:27.626742+00:00",
+      "decision_before_call": "Observed three tasks at version 1 with non-overlapping slots and peak scheduled power 2000 W, below the unchanged 2500 W ceiling. This is agenda data, not appliance execution. Undo the latest receipt to restore the initial empty agenda.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 12,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_transition",
+          "arguments": {
+            "action": "undo",
+            "id": "c9f99824-fe80-4134-b39d-fe637e8842f4",
+            "confirmed": true
+          }
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 12,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"data\": {\"after_hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"before_hash\": \"7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7\", \"hash\": \"ef205d2af14f07136a7ac2ba71db74d0f5b720fa0f57c23451493832a2352bfc\", \"id\": \"e0e27fae-6d46-4c44-babe-4347422e333b\", \"kind\": \"undo\", \"previous_hash\": \"8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85\", \"target\": \"c9f99824-fe80-4134-b39d-fe637e8842f4\", \"version\": 2}, \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "data": {
+              "id": "e0e27fae-6d46-4c44-babe-4347422e333b",
+              "kind": "undo",
+              "version": 2,
+              "before_hash": "7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7",
+              "after_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "previous_hash": "8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85",
+              "target": "c9f99824-fe80-4134-b39d-fe637e8842f4",
+              "hash": "ef205d2af14f07136a7ac2ba71db74d0f5b720fa0f57c23451493832a2352bfc"
+            }
+          },
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-16T10:51:33.109682+00:00",
+      "decision_before_call": "Undo returned a version-2 reversal receipt with the initial agenda hash. Read state to verify an empty restored agenda rather than treating the reversal receipt alone as proof.",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 13,
+        "method": "tools/call",
+        "params": {
+          "name": "accord_state",
+          "arguments": {}
+        }
+      },
+      "http_status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 13,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"data\": {\"cap\": 2500, \"plans\": {\"a3675969-d9b7-490a-a599-aa873216b2f9\": {\"additions\": [{\"appliance\": \"Washing machine\", \"duration\": 60, \"earliest\": 0, \"end\": 60, \"id\": \"adadb03a-53cc-4ebc-ac86-b710cbba95d9\", \"latest\": 180, \"owner\": \"Alice\", \"resource\": \"washer\", \"start\": 0, \"watts\": 1800}, {\"appliance\": \"Dishwasher\", \"duration\": 60, \"earliest\": 0, \"end\": 120, \"id\": \"543e2f34-230f-4d5d-ab7c-69729d6d78c4\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dishwasher\", \"start\": 60, \"watts\": 1000}, {\"appliance\": \"Dryer\", \"duration\": 60, \"earliest\": 0, \"end\": 180, \"id\": \"6f42ed31-e9ec-4e75-86c0-df5c17ba113b\", \"latest\": 180, \"owner\": \"Bob\", \"resource\": \"dryer\", \"start\": 120, \"watts\": 2000}], \"approvals\": [\"Alice\", \"Bob\"], \"base_version\": 0, \"cap\": 2500, \"id\": \"a3675969-d9b7-490a-a599-aa873216b2f9\", \"required\": [\"Alice\", \"Bob\"], \"status\": \"committed\"}}, \"receipts\": [{\"after_hash\": \"7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7\", \"approvals\": [\"Alice\", \"Bob\"], \"before_hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"before_tasks\": [], \"hash\": \"8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85\", \"id\": \"c9f99824-fe80-4134-b39d-fe637e8842f4\", \"kind\": \"commit\", \"plan_id\": \"a3675969-d9b7-490a-a599-aa873216b2f9\", \"previous_hash\": null, \"version\": 1}, {\"after_hash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"before_hash\": \"7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7\", \"hash\": \"ef205d2af14f07136a7ac2ba71db74d0f5b720fa0f57c23451493832a2352bfc\", \"id\": \"e0e27fae-6d46-4c44-babe-4347422e333b\", \"kind\": \"undo\", \"previous_hash\": \"8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85\", \"target\": \"c9f99824-fe80-4134-b39d-fe637e8842f4\", \"version\": 2}], \"tasks\": [], \"version\": 2}, \"simulation\": true}"
+            }
+          ],
+          "structuredContent": {
+            "simulation": true,
+            "data": {
+              "version": 2,
+              "cap": 2500,
+              "tasks": [],
+              "plans": {
+                "a3675969-d9b7-490a-a599-aa873216b2f9": {
+                  "id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+                  "base_version": 0,
+                  "cap": 2500,
+                  "additions": [
+                    {
+                      "id": "adadb03a-53cc-4ebc-ac86-b710cbba95d9",
+                      "owner": "Alice",
+                      "appliance": "Washing machine",
+                      "watts": 1800,
+                      "resource": "washer",
+                      "duration": 60,
+                      "earliest": 0,
+                      "latest": 180,
+                      "start": 0,
+                      "end": 60
+                    },
+                    {
+                      "id": "543e2f34-230f-4d5d-ab7c-69729d6d78c4",
+                      "owner": "Bob",
+                      "appliance": "Dishwasher",
+                      "watts": 1000,
+                      "resource": "dishwasher",
+                      "duration": 60,
+                      "earliest": 0,
+                      "latest": 180,
+                      "start": 60,
+                      "end": 120
+                    },
+                    {
+                      "id": "6f42ed31-e9ec-4e75-86c0-df5c17ba113b",
+                      "owner": "Bob",
+                      "appliance": "Dryer",
+                      "watts": 2000,
+                      "resource": "dryer",
+                      "duration": 60,
+                      "earliest": 0,
+                      "latest": 180,
+                      "start": 120,
+                      "end": 180
+                    }
+                  ],
+                  "required": [
+                    "Alice",
+                    "Bob"
+                  ],
+                  "approvals": [
+                    "Alice",
+                    "Bob"
+                  ],
+                  "status": "committed"
+                }
+              },
+              "receipts": [
+                {
+                  "id": "c9f99824-fe80-4134-b39d-fe637e8842f4",
+                  "kind": "commit",
+                  "version": 1,
+                  "before_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                  "after_hash": "7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7",
+                  "previous_hash": null,
+                  "plan_id": "a3675969-d9b7-490a-a599-aa873216b2f9",
+                  "approvals": [
+                    "Alice",
+                    "Bob"
+                  ],
+                  "before_tasks": [],
+                  "hash": "8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85"
+                },
+                {
+                  "id": "e0e27fae-6d46-4c44-babe-4347422e333b",
+                  "kind": "undo",
+                  "version": 2,
+                  "before_hash": "7b3d05f9a078f6e75d5fc02779d5d04bfcb389a733b114792b07e89f48e0afd7",
+                  "after_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                  "previous_hash": "8fd25d649bacb9ea253666960c3a6277a68c08847e8713a73297974bca96ef85",
+                  "target": "c9f99824-fe80-4134-b39d-fe637e8842f4",
+                  "hash": "ef205d2af14f07136a7ac2ba71db74d0f5b720fa0f57c23451493832a2352bfc"
+                }
+              ]
+            }
+          },
+          "isError": false
+        }
+      }
+    }
+  ],
+  "operator_conclusion": "PASS for the demonstrated synthetic household: agent observed planner refusal and widened windows; three tasks fit 2500 W ceiling with 2000 W observed scheduled peak; commit was blocked without both simulated approvals; after explicit simulated Alice/Bob approvals agenda contained three tasks; undo restored exactly the initial empty task list at version 2. Real agent-directed MCP HTTP exchanges, not Alexa or device execution. Local consistency receipts are not authenticated consent.",
+  "ended_at": "2026-10-16T10:51:39.703453+00:00",
+  "session_delete_status": 204,
+  "completed": true
+}

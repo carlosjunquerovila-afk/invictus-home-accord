@@ -1,0 +1,7 @@
+Observed 2026-10-16 UTC
+Source: ../home_accord_mcp_candidate
+Command: python3 -m unittest discover -s . -v
+Exit status: 0
+Ran 23 tests in 6.257s
+OK
+This is a summary captured from the actual execution, not a verbatim complete terminal log.

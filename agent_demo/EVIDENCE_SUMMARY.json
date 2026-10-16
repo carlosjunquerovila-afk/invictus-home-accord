@@ -1,0 +1,86 @@
+{
+  "observed_at": "2026-10-16T10:51:39.703453+00:00",
+  "result": "PASS",
+  "live_trace": {
+    "path": "live_agent_trace.json",
+    "sha256": "a2063e6690828bf65bb9f8f2968aa4e07aa61f6d38d3961f3c39295f9f5e8c1b",
+    "jsonrpc_exchanges": 13,
+    "tool_calls": 11,
+    "expected_refusals": 2,
+    "agent": "ChatGPT home_agent_demo selected calls sequentially through tools.exec after observing each response",
+    "transport": "real HTTP to separate local MCP child process"
+  },
+  "observed": {
+    "power_ceiling_watts": 2500,
+    "peak_scheduled_watts": 2000,
+    "committed_tasks": 3,
+    "version_before": 0,
+    "version_after_commit": 1,
+    "version_after_undo": 2,
+    "undo_restored_tasks": true,
+    "adaptive_change": "60-minute completion windows rejected; agent widened to 180 minutes without increasing power limit"
+  },
+  "tests": {
+    "existing_baseline_passed": 23,
+    "observed_seconds": 6.257,
+    "new_trace_verification": "PASS",
+    "replay_validation": "PASS"
+  },
+  "limits": [
+    "synthetic household",
+    "simulated role approvals, not authenticated humans",
+    "no Alexa connection",
+    "no runtime LLM added to application",
+    "no native ChatGPT MCP connector",
+    "no device operation",
+    "no protocol conformance certification",
+    "no customer or payment validation",
+    "no final video or competition submission"
+  ],
+  "files": [
+    {
+      "name": "BASELINE_TEST_RESULT.txt",
+      "sha256": "75220ae385bb8023d04ea06ee1a83a76068a13417c6fe21f3c78339a044006ca"
+    },
+    {
+      "name": "DEMO_SCRIPT_165_SECONDS.md",
+      "sha256": "2f8f3f09b3c13c72a4af0f139115299eac78ea1bc7a00707fe5fa85a2e84ae44"
+    },
+    {
+      "name": "README.md",
+      "sha256": "86fec9a77fcef0df18487100c025533c6b5752a33d250e2c105ae275699ee643"
+    },
+    {
+      "name": "agent_mcp_client.py",
+      "sha256": "8f05d27942aac317f0bc86fca5f940826453b6753c317599e4a94dff5dbd9a25"
+    },
+    {
+      "name": "live_agent_trace.json",
+      "sha256": "a2063e6690828bf65bb9f8f2968aa4e07aa61f6d38d3961f3c39295f9f5e8c1b"
+    },
+    {
+      "name": "replay_commands.jsonl",
+      "sha256": "76bd068cdffa4628c80cf2be9f4d121c316249b6fd13d64e15df6b0322b5fc06"
+    },
+    {
+      "name": "replay_terminal.jsonl",
+      "sha256": "bd80fffedda0f97593f69fe881411a75d4f34476e1a3856f96211c49c5d959b4"
+    },
+    {
+      "name": "replay_validation.json",
+      "sha256": "107c814d0ec6f59d0b062a71bce7c26e2fcb5523d70ad3579458cc6a32fdbd96"
+    },
+    {
+      "name": "verify_trace.py",
+      "sha256": "0202b6031f08a837b96f25754504defd6b6aefeab6164b9c779e8307ce3604eb"
+    }
+  ],
+  "documentation_review": {
+    "reviewer": "separate ChatGPT agent jury_gap_review",
+    "result": "PASS: claims match the documented scope",
+    "reviewed": "README, recording script, beginning/end of live trace",
+    "limits": "AI peer review within the same task; partial trace review; no independent human audit or full MCP certification",
+    "required_changes": []
+  },
+  "packaging_note": "Relative documentation paths and current file hashes updated for this jury release; all original application and trace bytes remain unchanged. The limits describe the original trace capture; the completed video was subsequently published on 16 October 2026: https://www.youtube.com/watch?v=jUKCHt0pncw. Final Devpost submission is not certified by this record."
+}

@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "artifact_sha256": "18003ca2ab270d21ef9851678a730db6877a60bef3b2eaf256f86b401fb43cd5",
+  "exchanges": 13,
+  "tool_calls": 11,
+  "expected_refusals": 2,
+  "observed_peak_scheduled_watts": 2000,
+  "ceiling_watts": 2500,
+  "undo_restored_initial_tasks": true,
+  "evidence_scope": "recorded local synthetic exchanges; no identity, device or Alexa proof"
+}
