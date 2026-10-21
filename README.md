@@ -2,7 +2,9 @@
 
 **Agree before the shared home acts.** A local simulated Alexa+ experience with a real Streamable HTTP MCP server: propose a household agenda, obtain scoped simulated consent, commit, inspect and undo.
 
-**Current evidence, 16 October 2026:** 23 internal tests pass. An external ChatGPT agent completed 13 JSON-RPC exchanges, including 11 tool calls, against a separate local MCP server process. The agent adapted its request after a refusal and completed a consent-gated, reversible agenda change. Recorded-command replay also passes.
+**Historical evidence, 16 October 2026:** 23 internal tests passed. An external ChatGPT agent completed 13 JSON-RPC exchanges, including 11 tool calls, against a separate local MCP server process. The agent adapted its request after a refusal and completed a consent-gated, reversible agenda change. Recorded-command replay also passed.
+
+**HTTP correction, 21 October 2026:** the local web simulator now rejects malformed request framing, bounds socket reads, returns structured storage-error responses and avoids claiming rollback when only the reply is lost after a committed write. The first correction passed a 25-test suite. Following a further response-delivery correction, all three targeted regression tests passed; the full 26-test suite was not rerun. `PACKAGE_MANIFEST.json` records these stages separately, the final targeted log and the current file hashes. This update creates no new agent trace, Alexa connection or device execution evidence.
 
 The household and approvals are simulated. There is no Alexa connection, runtime LLM embedded in the app, native ChatGPT MCP connector, authenticated resident or physical appliance control. The competition path is the **Alexa+ simulated experience**; the implemented MCP surface is an additional runnable interface.
 
@@ -36,7 +38,9 @@ python3 agent_demo/agent_mcp_client.py --source . --commands agent_demo/replay_c
 python3 agent_demo/verify_trace.py agent_replay.json
 ```
 
-The first command runs the 23 internal tests. `mcp_demo.py` starts a separate local server and exercises a complete simulated workflow. `verify_trace.py` audits stored evidence; it does not execute a model. The command replay starts a fresh local server with temporary state and explicit simulated-consent mode, performs real HTTP calls, then closes the session and process. It makes no new model inference.
+The first command discovers the current internal tests, including the three HTTP regressions in `test_audit_http.py`. The historical 23-test result and the later correction results are distinct, as described above. `mcp_demo.py` starts a separate local server and exercises a complete simulated workflow. `verify_trace.py` audits stored evidence; it does not execute a model. The command replay starts a fresh local server with temporary state and explicit simulated-consent mode, performs real HTTP calls, then closes the session and process. It makes no new model inference.
+
+To verify the current source distribution without running application tests, use `sha256sum -c SHA256SUMS.txt`. The preserved checksums under `historical/20261016/` describe the earlier distribution and must not be used as checksums of this corrected tree.
 
 `agent_demo/live_agent_trace.json` records the original agent-directed run. Its SHA-256 is:
 
@@ -93,9 +97,9 @@ Configure the host for `http://127.0.0.1:8766/mcp` with the corresponding bearer
 
 ## Project history
 
-The original project and repository were prepared on 6 October 2026 as a local web simulation. The current 0.2.0 candidate adds MCP transport, transport/security regression coverage and the external-agent trace of 16 October. The current 23-test total consists of 12 inherited tests, ten MCP HTTP tests and one additional legacy HTTP security test.
+The original project and repository were prepared on 6 October 2026 as a local web simulation. The 0.2.0 candidate added MCP transport, transport/security regression coverage and the external-agent trace of 16 October. Its historical 23-test total consisted of 12 inherited tests, ten MCP HTTP tests and one additional legacy HTTP security test. The 21 October correction adds three targeted HTTP regression tests while preserving that earlier evidence.
 
-`TEST_RESULT.txt` and `AUDIT_REVIEW.json` are retained historical technical records. Their earlier counts and absence-of-agent statements are not the current result. Current execution evidence is in `agent_demo/EVIDENCE_SUMMARY.json`, `agent_demo/BASELINE_TEST_RESULT.txt`, `agent_demo/live_agent_trace.json` and the replay record.
+`TEST_RESULT.txt`, `AUDIT_REVIEW.json`, `PUBLICATION_TEST_RESULT.txt` and the dated `agent_demo/` and `demo_video/` records are retained historical evidence. Their earlier counts, hashes and absence-of-agent statements must not be reassigned to the corrected source. The original distribution manifest and checksums are preserved byte for byte under `historical/20261016/`. The root `PACKAGE_MANIFEST.json` and `SHA256SUMS.txt` describe the current corrected source distribution.
 
 ## Submission and attribution
 
@@ -111,9 +115,11 @@ Official track requirements: https://amazonappdev2026.devpost.com/rules . The si
 - `demo_video/Home_Accord_Demo_en.srt`: matching English subtitles.
 - `demo_video/README.md`: recording method, limitations and optional renderer dependencies.
 - `DEVPOST_STORY.md`, `PROJECT_FEEDBACK.md`, `FRICTION_LOG.md`: English submission materials.
-- `PACKAGE_MANIFEST.json`: source preservation checks and file hashes for this release.
+- `PACKAGE_MANIFEST.json`: current source hashes, correction scope, dated verification stages and retained final targeted-test log.
+- `SHA256SUMS.txt`: current distribution checksums, including the current package manifest and preserved historical files; excludes itself.
+- `historical/20261016/`: original distribution manifest and checksums, preserved unchanged.
 
-The source files and dated technical evidence remain in the package. Account and publication-operation records are omitted from this jury distribution. Documentation path changes do not alter application behavior.
+The source files and dated technical evidence remain in the package. Account credentials and runtime state are omitted. The two application/test files changed by the correction are identified separately from the documentation and manifest update.
 
 ## Public demonstration
 
