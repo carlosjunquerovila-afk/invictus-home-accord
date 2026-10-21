@@ -1,36 +1,77 @@
 {
-  "package": "Home Accord jury distribution 2026-10-16",
-  "version": "0.2.0",
+  "package": "Home Accord corrected source distribution",
+  "package_revision": "2026-10-21-http-audit",
+  "application_version_label": "0.2.0 retained",
   "author": "Carlosjv",
-  "prepared_at": "2026-10-16T16:26:04.509058+02:00",
-  "public_demo": {
-    "url": "https://www.youtube.com/watch?v=jUKCHt0pncw",
-    "duration_seconds": 138,
-    "method": "Recorded real HTTP execution viewer; no new model inference; simulated household consent"
+  "prepared_at_madrid": "2026-10-21T18:47:11.995458+02:00",
+  "base_public_commit": "9ca5ab0640183855ac4ea587526d8d61d51b5385",
+  "reviewed_code_commit": "23669b40bd369b7877dd4531bf8bedd18e02c62d",
+  "publication_claim": "This manifest identifies local prepared source and retained test evidence. It does not certify GitHub publication, merged remote commit, deployment or a new Devpost submission.",
+  "correction_scope": {
+    "app.py": "Validate HTTP framing, bound socket reads, structure I/O errors, separate durable mutation from response delivery",
+    "test_audit_http.py": "Three targeted regression tests; no physical devices or real resident authentication"
   },
-  "publication_claim": "This archive does not certify repository publication or final Devpost submission.",
-  "application_code_unchanged": {
-    "app.py": "7a874ea5d8bb0665fdb94fb9e27fc9635d931d3df02c93f9808d3ff7782ef561",
-    "index.html": "5d9d5957c828c7a5fbaa3c139867dcb5d9a65941549e2bd4c22da62da82b5d8c",
-    "mcp_demo.py": "d49d15d8ad91efc362b9dafd3bb6c66d872ece5cb14fb20c5b8343612c1e625b",
-    "mcp_server.py": "4d58f777fca97a61d133bfb8b26e73f228675dc35290d2a30e6c32c10ec225a1",
-    "test_app.py": "5f2adc31b6cbd42860f2fec62498516e1bcd7208c7a07a4c35d46fd79c148d81",
-    "test_http.py": "048f248fc4df8c9ab950022bb44ada302caf9037806ecc5f1b37c4ca1e018570",
-    "test_mcp.py": "49bf5180e0097ee89827dc0290cd020b2c0e150f77eeb312012957d97efcef68"
+  "current_code": {
+    "app.py": "331c16ac92b92839f916045965393bc6fdcbe2d9a981b8a0b615b5796c228838",
+    "test_audit_http.py": "6f9d19e5a43207aa5656588820198bcd34f8b836d8aa02bb9c95f22da15f934a"
   },
   "verification": {
-    "original_source_hashes_match": true,
+    "historical_20261016": {
+      "full_suite_tests": 23,
+      "result": "PASS",
+      "record": "PUBLICATION_TEST_RESULT.txt",
+      "scope": "Historical source distribution; not evidence of a full run on the corrected source"
+    },
+    "initial_patch_20261021": {
+      "full_suite_tests": 25,
+      "result": "PASS",
+      "source_log_sha256": "a604e7d91e466ea83b5be518d701ecd93beb15a8fcdcec0bc02f12c98104633c",
+      "scope": "First patch before final response-delivery correction; not a 26-test final-suite result"
+    },
+    "final_patch_20261021": {
+      "targeted_tests": 3,
+      "result": "PASS",
+      "source_log_sha256": "cf947c9ca11f916f6e30543c806a25cbbd01936de2465377d3919fa2bba59dbe",
+      "retained_log": "test_disk_failure_returns_json_and_rolls_back (test_audit_http.AuditHTTP.test_disk_failure_returns_json_and_rolls_back) ... ok\ntest_invalid_framing_refused_without_mutation (test_audit_http.AuditHTTP.test_invalid_framing_refused_without_mutation) ... ok\ntest_lost_success_reply_does_not_claim_rollback (test_audit_http.AuditHTTP.test_lost_success_reply_does_not_claim_rollback) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 1.511s\n\nOK\n",
+      "scope": "Final reviewed app.py and test_audit_http.py identified above; no full26-test suite rerun"
+    },
+    "review": {
+      "decision": "APPROVE_LOCAL_INTEGRATION",
+      "patch_sha256": "81ac46198bc578ef52e88095b324382c61bc6f6a77453108a90bc32b3c30cf7c",
+      "method": "Separate agent reviewed code and final targeted-test log; internal review, not an independent external audit"
+    },
+    "new_application_tests_during_packaging": 0,
     "original_agent_trace_unchanged": true,
-    "video_bytes_unchanged": true,
-    "retained_test_result": "23 internal tests; PUBLICATION_TEST_RESULT.txt",
-    "retained_replay_verification": "agent_demo/PUBLICATION_REPLAY_CHECK.json"
+    "video_bytes_unchanged": true
   },
-  "manifest_coverage": "files contains every payload file; PACKAGE_MANIFEST.json is excluded from its own hash list to avoid circularity; SHA256SUMS.txt covers all files except itself, including this manifest.",
+  "historical_records": {
+    "original_distribution_manifest": "historical/20261016/PACKAGE_MANIFEST.json",
+    "original_distribution_checksums": "historical/20261016/SHA256SUMS.txt",
+    "interpretation": "Preserved byte-for-byte from base_public_commit. Their hashes describe the earlier distribution, not current corrected files. AUDIT_REVIEW.json and other dated records retain original scope and app hashes."
+  },
+  "manifest_coverage": "files covers every tracked distribution payload file plus the two preserved historical files, excluding PACKAGE_MANIFEST.json and SHA256SUMS.txt to avoid circularity. SHA256SUMS.txt covers that same distribution plus this manifest, excluding itself. Runtime state, ignored caches and Git internals are excluded.",
+  "limits": [
+    "Local simulated household consent only",
+    "No Alexa or appliance integration introduced",
+    "No new agent inference or video evidence",
+    "No fsync-backed power-loss guarantee",
+    "No claim of independent authenticated evidence or prize readiness"
+  ],
   "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 40,
+      "sha256": "61702f49e94a4f2011e902b94deb80a5cad7f0b54e441eef2932b14ef545fd24"
+    },
     {
       "path": "AUDIT_REVIEW.json",
       "bytes": 1177,
       "sha256": "8f595fa4152d4bc9d3c9a414c2747375d73822a97ba5ee5bef73281c2617c2a7"
+    },
+    {
+      "path": "DEMO_SCRIPT.md",
+      "bytes": 2116,
+      "sha256": "ae581a70e924f3b68ad60127442cf0aca0824eebd59b5bbfd305c4676dc910a8"
     },
     {
       "path": "DEVPOST_STORY.md",
@@ -64,8 +105,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 9041,
-      "sha256": "80bfc844cbeb9a38d6983ca662928d18624f6f726b1bb55d9247d8c2bbabc3db"
+      "bytes": 10657,
+      "sha256": "bb75e7d556c12f9abbf76573b076e8ac6caa8a2aae88e8d95d5242bbfc3c9f65"
+    },
+    {
+      "path": "SUBMISSION_DRAFT.md",
+      "bytes": 3261,
+      "sha256": "b426e48a427a370ab3bab2b737ce29bc0b3ef4f3ab43fd06c228dcdd94945f6f"
     },
     {
       "path": "TEST_RESULT.txt",
@@ -139,8 +185,8 @@
     },
     {
       "path": "app.py",
-      "bytes": 11536,
-      "sha256": "7a874ea5d8bb0665fdb94fb9e27fc9635d931d3df02c93f9808d3ff7782ef561"
+      "bytes": 12567,
+      "sha256": "331c16ac92b92839f916045965393bc6fdcbe2d9a981b8a0b615b5796c228838"
     },
     {
       "path": "demo_video/Home_Accord_Demo_138s.mp4",
@@ -188,6 +234,16 @@
       "sha256": "909e69244279a4ec7fd471113e8c381dd496475926c30a5a1da201186a9db66e"
     },
     {
+      "path": "historical/20261016/PACKAGE_MANIFEST.json",
+      "bytes": 7710,
+      "sha256": "6c997372113d23655e4ac3e067476b9bef2f0f07a9f0b6b1d31da5c8760e3fcf"
+    },
+    {
+      "path": "historical/20261016/SHA256SUMS.txt",
+      "bytes": 3543,
+      "sha256": "36178ba538108a2fda79adf4fec922eda4f255a949a0fff0fd9a0b4f966d588b"
+    },
+    {
       "path": "index.html",
       "bytes": 11048,
       "sha256": "5d9d5957c828c7a5fbaa3c139867dcb5d9a65941549e2bd4c22da62da82b5d8c"
@@ -206,6 +262,11 @@
       "path": "test_app.py",
       "bytes": 4221,
       "sha256": "5f2adc31b6cbd42860f2fec62498516e1bcd7208c7a07a4c35d46fd79c148d81"
+    },
+    {
+      "path": "test_audit_http.py",
+      "bytes": 3323,
+      "sha256": "6f9d19e5a43207aa5656588820198bcd34f8b836d8aa02bb9c95f22da15f934a"
     },
     {
       "path": "test_http.py",

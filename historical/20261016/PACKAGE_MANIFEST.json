@@ -1,0 +1,221 @@
+{
+  "package": "Home Accord jury distribution 2026-10-16",
+  "version": "0.2.0",
+  "author": "Carlosjv",
+  "prepared_at": "2026-10-16T16:26:04.509058+02:00",
+  "public_demo": {
+    "url": "https://www.youtube.com/watch?v=jUKCHt0pncw",
+    "duration_seconds": 138,
+    "method": "Recorded real HTTP execution viewer; no new model inference; simulated household consent"
+  },
+  "publication_claim": "This archive does not certify repository publication or final Devpost submission.",
+  "application_code_unchanged": {
+    "app.py": "7a874ea5d8bb0665fdb94fb9e27fc9635d931d3df02c93f9808d3ff7782ef561",
+    "index.html": "5d9d5957c828c7a5fbaa3c139867dcb5d9a65941549e2bd4c22da62da82b5d8c",
+    "mcp_demo.py": "d49d15d8ad91efc362b9dafd3bb6c66d872ece5cb14fb20c5b8343612c1e625b",
+    "mcp_server.py": "4d58f777fca97a61d133bfb8b26e73f228675dc35290d2a30e6c32c10ec225a1",
+    "test_app.py": "5f2adc31b6cbd42860f2fec62498516e1bcd7208c7a07a4c35d46fd79c148d81",
+    "test_http.py": "048f248fc4df8c9ab950022bb44ada302caf9037806ecc5f1b37c4ca1e018570",
+    "test_mcp.py": "49bf5180e0097ee89827dc0290cd020b2c0e150f77eeb312012957d97efcef68"
+  },
+  "verification": {
+    "original_source_hashes_match": true,
+    "original_agent_trace_unchanged": true,
+    "video_bytes_unchanged": true,
+    "retained_test_result": "23 internal tests; PUBLICATION_TEST_RESULT.txt",
+    "retained_replay_verification": "agent_demo/PUBLICATION_REPLAY_CHECK.json"
+  },
+  "manifest_coverage": "files contains every payload file; PACKAGE_MANIFEST.json is excluded from its own hash list to avoid circularity; SHA256SUMS.txt covers all files except itself, including this manifest.",
+  "files": [
+    {
+      "path": "AUDIT_REVIEW.json",
+      "bytes": 1177,
+      "sha256": "8f595fa4152d4bc9d3c9a414c2747375d73822a97ba5ee5bef73281c2617c2a7"
+    },
+    {
+      "path": "DEVPOST_STORY.md",
+      "bytes": 5376,
+      "sha256": "f24353e360d4299ac46806ba632d5d87de776060031dae187023edb3716f7d7a"
+    },
+    {
+      "path": "FRICTION_LOG.md",
+      "bytes": 4629,
+      "sha256": "628c62718e97b2fe5eb5a2d202767b077d89221b02d8024484c56782c6341dba"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1077,
+      "sha256": "5e2511faafe31616512cf493f95bb61a80f3fe9f2159a3075d85648c11df8713"
+    },
+    {
+      "path": "MCP_GUIDE.md",
+      "bytes": 5952,
+      "sha256": "c78fb4847335fe8a4687888a69cb4b376a53eb06e327798d891f3159828ddca6"
+    },
+    {
+      "path": "PROJECT_FEEDBACK.md",
+      "bytes": 5740,
+      "sha256": "0accb1fbdd5b3837a6e0e34de744dd99573d0f408030e1ccc5c549cd77d2a2ce"
+    },
+    {
+      "path": "PUBLICATION_TEST_RESULT.txt",
+      "bytes": 3038,
+      "sha256": "56b92affb5955924de7ba501fa93123b73dd80fffa032743ddab885e1774da29"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9041,
+      "sha256": "80bfc844cbeb9a38d6983ca662928d18624f6f726b1bb55d9247d8c2bbabc3db"
+    },
+    {
+      "path": "TEST_RESULT.txt",
+      "bytes": 1488,
+      "sha256": "c738aa2b93e414651828e4829df11dc21d97b759cd5c643ec29171e408192402"
+    },
+    {
+      "path": "agent_demo/BASELINE_TEST_RESULT.txt",
+      "bytes": 240,
+      "sha256": "75220ae385bb8023d04ea06ee1a83a76068a13417c6fe21f3c78339a044006ca"
+    },
+    {
+      "path": "agent_demo/DEMO_SCRIPT_165_SECONDS.md",
+      "bytes": 2850,
+      "sha256": "2f8f3f09b3c13c72a4af0f139115299eac78ea1bc7a00707fe5fa85a2e84ae44"
+    },
+    {
+      "path": "agent_demo/EVIDENCE_SUMMARY.json",
+      "bytes": 3345,
+      "sha256": "c67a8b68a8af234d9119f84e430b7ca7aa6c2c13d9411862a77f7afd23a3f255"
+    },
+    {
+      "path": "agent_demo/PUBLICATION_REPLAY_CHECK.json",
+      "bytes": 376,
+      "sha256": "a63ed14e218927ae70a22e2f73760bd5a903b7cc97eeae74682ad446db316325"
+    },
+    {
+      "path": "agent_demo/README.md",
+      "bytes": 6515,
+      "sha256": "86fec9a77fcef0df18487100c025533c6b5752a33d250e2c105ae275699ee643"
+    },
+    {
+      "path": "agent_demo/agent_mcp_client.py",
+      "bytes": 8504,
+      "sha256": "8f05d27942aac317f0bc86fca5f940826453b6753c317599e4a94dff5dbd9a25"
+    },
+    {
+      "path": "agent_demo/live_agent_trace.json",
+      "bytes": 43169,
+      "sha256": "a2063e6690828bf65bb9f8f2968aa4e07aa61f6d38d3961f3c39295f9f5e8c1b"
+    },
+    {
+      "path": "agent_demo/publication_replay.json",
+      "bytes": 43211,
+      "sha256": "18003ca2ab270d21ef9851678a730db6877a60bef3b2eaf256f86b401fb43cd5"
+    },
+    {
+      "path": "agent_demo/publication_replay_terminal.jsonl",
+      "bytes": 27429,
+      "sha256": "f4d0f073ec30a0fe70674964561db0e348bdf49494ddf5afbee4b4f923355349"
+    },
+    {
+      "path": "agent_demo/replay_commands.jsonl",
+      "bytes": 4882,
+      "sha256": "76bd068cdffa4628c80cf2be9f4d121c316249b6fd13d64e15df6b0322b5fc06"
+    },
+    {
+      "path": "agent_demo/replay_terminal.jsonl",
+      "bytes": 27428,
+      "sha256": "bd80fffedda0f97593f69fe881411a75d4f34476e1a3856f96211c49c5d959b4"
+    },
+    {
+      "path": "agent_demo/replay_validation.json",
+      "bytes": 43244,
+      "sha256": "107c814d0ec6f59d0b062a71bce7c26e2fcb5523d70ad3579458cc6a32fdbd96"
+    },
+    {
+      "path": "agent_demo/verify_trace.py",
+      "bytes": 3197,
+      "sha256": "0202b6031f08a837b96f25754504defd6b6aefeab6164b9c779e8307ce3604eb"
+    },
+    {
+      "path": "app.py",
+      "bytes": 11536,
+      "sha256": "7a874ea5d8bb0665fdb94fb9e27fc9635d931d3df02c93f9808d3ff7782ef561"
+    },
+    {
+      "path": "demo_video/Home_Accord_Demo_138s.mp4",
+      "bytes": 1132334,
+      "sha256": "77a2431e4d8ca210aabc6a03a4f8cd85d76e3ae3c016f65f647c58e60727d8fe"
+    },
+    {
+      "path": "demo_video/Home_Accord_Demo_en.srt",
+      "bytes": 2309,
+      "sha256": "3e4a3cff59f22b310f2da4779306a3fbc2f38429880172811e17922445a875ae"
+    },
+    {
+      "path": "demo_video/MANIFEST.json",
+      "bytes": 3174,
+      "sha256": "66ea2d4466514f6c48392723668fb86926c32d2525037b602c730f0e5d41f012"
+    },
+    {
+      "path": "demo_video/README.md",
+      "bytes": 5249,
+      "sha256": "64745d9c80743911d6458c650bc4fc550f348a66d676d5b522faf94f944bec6a"
+    },
+    {
+      "path": "demo_video/VIDEO_SCRIPT.md",
+      "bytes": 2988,
+      "sha256": "0319b55dec97c63bc7d1c76c8d3b2c1e1c3ee817d5651505dbaff83da6788d07"
+    },
+    {
+      "path": "demo_video/execution_verification.json",
+      "bytes": 376,
+      "sha256": "315aed9e19db55d44710f38dc9bb769be5f29b8faadd17a71f424ffbfa5e7f86"
+    },
+    {
+      "path": "demo_video/recorded_execution.json",
+      "bytes": 43282,
+      "sha256": "b17af84e861a991eca05eb8c1111269e56206f5a057799b2ad63aa154bd9fa54"
+    },
+    {
+      "path": "demo_video/recorded_terminal.jsonl",
+      "bytes": 27479,
+      "sha256": "ebd7e61d304fe095d05fd8c2f792a34c1381a12f0795517e22f2dfd8b5c268b8"
+    },
+    {
+      "path": "demo_video/render_demo.py",
+      "bytes": 18849,
+      "sha256": "909e69244279a4ec7fd471113e8c381dd496475926c30a5a1da201186a9db66e"
+    },
+    {
+      "path": "index.html",
+      "bytes": 11048,
+      "sha256": "5d9d5957c828c7a5fbaa3c139867dcb5d9a65941549e2bd4c22da62da82b5d8c"
+    },
+    {
+      "path": "mcp_demo.py",
+      "bytes": 4165,
+      "sha256": "d49d15d8ad91efc362b9dafd3bb6c66d872ece5cb14fb20c5b8343612c1e625b"
+    },
+    {
+      "path": "mcp_server.py",
+      "bytes": 17701,
+      "sha256": "4d58f777fca97a61d133bfb8b26e73f228675dc35290d2a30e6c32c10ec225a1"
+    },
+    {
+      "path": "test_app.py",
+      "bytes": 4221,
+      "sha256": "5f2adc31b6cbd42860f2fec62498516e1bcd7208c7a07a4c35d46fd79c148d81"
+    },
+    {
+      "path": "test_http.py",
+      "bytes": 3960,
+      "sha256": "048f248fc4df8c9ab950022bb44ada302caf9037806ecc5f1b37c4ca1e018570"
+    },
+    {
+      "path": "test_mcp.py",
+      "bytes": 11245,
+      "sha256": "49bf5180e0097ee89827dc0290cd020b2c0e150f77eeb312012957d97efcef68"
+    }
+  ]
+}

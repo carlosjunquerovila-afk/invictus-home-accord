@@ -3,7 +3,7 @@ from copy import deepcopy
 from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-import argparse, json, threading, uuid
+import argparse, json, re, threading, uuid
 from functools import wraps
 
 STEP = 15
@@ -183,6 +183,10 @@ class Accord:
             return result
 
 class Handler(BaseHTTPRequestHandler):
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(5)
+
     def valid_host(self):
         values = self.headers.get_all('Host') or []
         return len(values) == 1 and values[0] in {
@@ -214,10 +218,17 @@ class Handler(BaseHTTPRequestHandler):
             expected = f'http://{self.headers.get("Host")}'
             if origins != [expected]:
                 return self.send(403, {'error': 'Cross-origin action refused.'})
-            size = int(self.headers.get('Content-Length', 0))
-            if size > 32768:
-                return self.send(413, {'error': 'Request too large'})
-            data = json.loads(self.rfile.read(size))
+            lengths = self.headers.get_all('Content-Length') or []
+            if (self.headers.get('Transfer-Encoding') or len(lengths) != 1
+                    or not re.fullmatch(r'[0-9]{1,6}', lengths[0])):
+                return self.send(400, {'error': 'A single nonnegative Content-Length is required.'})
+            size = int(lengths[0])
+            if not 0 < size <= 32768:
+                return self.send(413, {'error': 'Request body must contain 1 to 32768 bytes.'})
+            raw = self.rfile.read(size)
+            if len(raw) != size:
+                return self.send(400, {'error': 'Truncated request body.'})
+            data = json.loads(raw)
             engine = self.server.accord
             if self.path == '/plan': result = engine.propose(data.get('requests'))
             elif self.path == '/approve': result = engine.approve(data.get('id'), data.get('resident'), data.get('consent', True))
@@ -225,9 +236,19 @@ class Handler(BaseHTTPRequestHandler):
             elif self.path == '/undo': result = engine.undo(data.get('id'))
             elif self.path == '/cap': engine.set_cap(data.get('cap')); result = engine.snapshot()
             else: return self.send(404, {'error': 'Not found'})
-            self.send(200, result)
-        except (AccordError, ValueError, TypeError, AttributeError) as exc:
+        except TimeoutError:
+            self.send(408, {'error': 'Request body timed out.'})
+        except OSError:
+            self.send(500, {'error': 'Local I/O failed. Read /state before retrying.'})
+        except (AccordError, ValueError, TypeError, AttributeError, RecursionError) as exc:
             self.send(400, {'error': str(exc)})
+        else:
+            # The mutation is already durable. A lost reply must not claim rollback
+            # or attempt a second response on a partially written connection.
+            try:
+                self.send(200, result)
+            except OSError:
+                self.close_connection = True
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
